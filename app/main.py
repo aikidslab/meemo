@@ -19,7 +19,6 @@ app.include_router(generate.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
 
 app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
-app.mount("/minutes", StaticFiles(directory=Path(__file__).parent.parent / "minutes"), name="minutes_files")
 
 
 @app.get("/")

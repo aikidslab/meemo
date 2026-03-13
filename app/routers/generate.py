@@ -1,5 +1,6 @@
 import asyncio
 import os
+import uuid
 from datetime import datetime
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, Request
@@ -14,9 +15,10 @@ MINUTES_DIR = Path(__file__).parent.parent.parent / "minutes"
 
 class GenerateRequest(BaseModel):
     transcript: str
-    save: bool = True
+    save: bool = False
     template_id: str = "general"
     output_language: str = "ko"
+    template_prompt: str | None = None
 
 
 @router.post("/generate")
@@ -29,12 +31,18 @@ async def generate(req: GenerateRequest, request: Request):
         raise HTTPException(status_code=422, detail="트랜스크립트가 비어 있습니다.")
 
     try:
-        minutes = await generate_minutes(req.transcript, groq_key, req.template_id, req.output_language)
+        minutes = await generate_minutes(
+            req.transcript,
+            groq_key,
+            req.template_id,
+            req.output_language,
+            req.template_prompt,
+        )
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"Groq API 오류: {str(e)}")
 
-    date_str = datetime.now().strftime("%Y-%m-%d_%H%M")
-    filename = f"{date_str}_meeting.md"
+    date_str = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    filename = f"{date_str}_{uuid.uuid4().hex[:8]}_meeting.md"
     result = {"minutes": minutes, "filename": filename, "drive_link": "", "email_sent": False}
 
     # 로컬 저장
@@ -45,7 +53,7 @@ async def generate(req: GenerateRequest, request: Request):
     # Google Drive 저장 + 이메일 전송 (로그인 상태일 때)
     session = get_session(request.cookies.get("session_id"))
     if session:
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
 
         # Drive 업로드
         try:
@@ -67,17 +75,24 @@ async def generate(req: GenerateRequest, request: Request):
             )
             result["email_sent"] = True
         except Exception as e:
-            import traceback
-            traceback.print_exc()
             result["email_error"] = str(e)
 
     return result
 
 
 @router.get("/download/{filename}")
-async def download(filename: str):
-    path = MINUTES_DIR / filename
-    if not path.exists() or not filename.endswith(".md"):
+async def download(filename: str, request: Request):
+    if not get_session(request.cookies.get("session_id")):
+        raise HTTPException(status_code=401, detail="로그인이 필요합니다.")
+
+    minutes_root = MINUTES_DIR.resolve()
+    path = (MINUTES_DIR / filename).resolve()
+    if (
+        path.parent != minutes_root
+        or not path.exists()
+        or not path.is_file()
+        or path.suffix != ".md"
+    ):
         raise HTTPException(status_code=404, detail="파일을 찾을 수 없습니다.")
     return FileResponse(
         path,

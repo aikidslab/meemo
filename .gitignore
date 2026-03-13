@@ -8,6 +8,7 @@ certs/
 # 런타임 생성 파일
 minutes/
 app/data/custom_templates.json
+app/data/sessions.json
 
 # Python
 __pycache__/

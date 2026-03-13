@@ -1,5 +1,6 @@
 import asyncio
 import os
+import uuid
 from datetime import datetime
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from app.services.groq_stt import transcribe_audio
@@ -29,11 +30,11 @@ async def transcribe(request: Request, audio: UploadFile = File(...)):
     session = get_session(request.cookies.get("session_id"))
     if session:
         try:
-            date_str = datetime.now().strftime("%Y-%m-%d_%H%M")
+            date_str = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             ext = "mp4" if filename.endswith(".mp4") else "webm"
-            drive_filename = f"{date_str}_recording.{ext}"
+            drive_filename = f"{date_str}_{uuid.uuid4().hex[:8]}_recording.{ext}"
             mime = "audio/mp4" if ext == "mp4" else "audio/webm"
-            loop = asyncio.get_event_loop()
+            loop = asyncio.get_running_loop()
             from app.services.google_drive import upload_to_drive
             drive_link = await loop.run_in_executor(
                 None, upload_to_drive, session, audio_bytes, drive_filename, mime, "recordings"

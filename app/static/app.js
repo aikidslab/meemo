@@ -5,10 +5,12 @@ let user = null;
 let currentWizardStep = 1;
 let allTemplates = [], allLanguages = [];
 let editingTemplateId = null;
+const CUSTOM_TEMPLATES_KEY = "custom_templates_v1";
 
 // ── Init ─────────────────────────────────────────────────────
 window.addEventListener("DOMContentLoaded", async () => {
-  await Promise.all([loadUser(), loadTemplates()]);
+  await loadUser();
+  await loadTemplates();
 
   const groq = localStorage.getItem("groq_key");
   if (!groq) {
@@ -114,6 +116,55 @@ function updateGoogleUI() {
   }
 }
 
+function customTemplatesStorageKey() {
+  return user?.email ? `${CUSTOM_TEMPLATES_KEY}:${user.email}` : CUSTOM_TEMPLATES_KEY;
+}
+
+function normalizeTemplate(template) {
+  if (!template || typeof template !== "object") return null;
+  const id = typeof template.id === "string" ? template.id : "";
+  const name = typeof template.name === "string" ? template.name.trim() : "";
+  const description = typeof template.description === "string" ? template.description.trim() : "";
+  const prompt = typeof template.prompt === "string" ? template.prompt.trim() : "";
+  if (!id || !name || !prompt) return null;
+  return {
+    id,
+    name,
+    description,
+    prompt,
+    is_preset: false,
+    forked_from: typeof template.forked_from === "string" ? template.forked_from : undefined,
+  };
+}
+
+function loadCustomTemplates() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(customTemplatesStorageKey()) || "[]");
+    if (!Array.isArray(raw)) return [];
+    return raw.map(normalizeTemplate).filter(Boolean);
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomTemplates(templates) {
+  const sanitized = templates.map(normalizeTemplate).filter(Boolean).map(template => ({
+    id: template.id,
+    name: template.name,
+    description: template.description,
+    prompt: template.prompt,
+    forked_from: template.forked_from,
+  }));
+  localStorage.setItem(customTemplatesStorageKey(), JSON.stringify(sanitized));
+}
+
+function generateTemplateId() {
+  if (window.crypto?.randomUUID) {
+    return `local_${window.crypto.randomUUID()}`;
+  }
+  return `local_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
+}
+
 function confirmLogout() {
   if (confirm(`${user?.email || "Google 계정"}에서 로그아웃할까요?`)) {
     window.location.href = "/auth/logout";
@@ -204,6 +255,8 @@ async function generateMinutes() {
 
   const template_id = document.getElementById("template-select")?.value || "general";
   const output_language = document.getElementById("language-select")?.value || "ko";
+  const selectedTemplate = allTemplates.find(t => t.id === template_id);
+  const template_prompt = selectedTemplate && !selectedTemplate.is_preset ? selectedTemplate.prompt : undefined;
 
   setMainState("processing_minutes");
   document.getElementById("processing-label").textContent = "회의록 생성 중...";
@@ -215,20 +268,15 @@ async function generateMinutes() {
         "Content-Type": "application/json",
         "X-Groq-Key": localStorage.getItem("groq_key") || "",
       },
-      body: JSON.stringify({ transcript, save: true, template_id, output_language }),
+      body: JSON.stringify({ transcript, save: false, template_id, output_language, template_prompt }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || "회의록 생성에 실패했습니다.");
 
     currentMinutes = data.minutes;
     currentFilename = data.filename || "meeting.md";
-    document.getElementById("minutes-body").innerHTML = marked.parse(currentMinutes);
-
-    const badges = document.getElementById("result-badges");
-    badges.innerHTML = "";
-    if (data.drive_link) badges.innerHTML += `<a href="${data.drive_link}" target="_blank" class="rbadge rbadge-drive">📁 Drive 저장됨</a>`;
-    if (data.email_sent) badges.innerHTML += `<span class="rbadge rbadge-email">✉️ 이메일 전송됨</span>`;
-    if (data.drive_error) badges.innerHTML += `<span class="rbadge rbadge-warn">⚠️ Drive 저장 실패</span>`;
+    renderMinutes(currentMinutes);
+    renderResultBadges(data);
 
     setMainState("results");
   } catch (e) { showError(e.message); }
@@ -257,14 +305,67 @@ function showError(msg) {
   setMainState("error");
 }
 
+function renderMinutes(markdown) {
+  const target = document.getElementById("minutes-body");
+  if (!window.marked?.parse) {
+    target.textContent = markdown;
+    return;
+  }
+
+  const rendered = window.marked.parse(markdown);
+  if (window.DOMPurify) {
+    target.innerHTML = window.DOMPurify.sanitize(rendered);
+    return;
+  }
+  target.textContent = markdown;
+}
+
+function isSafeExternalUrl(value) {
+  try {
+    const url = new URL(value, window.location.origin);
+    return url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function renderResultBadges(data) {
+  const badges = document.getElementById("result-badges");
+  badges.replaceChildren();
+
+  if (data.drive_link && isSafeExternalUrl(data.drive_link)) {
+    const driveLink = document.createElement("a");
+    driveLink.href = data.drive_link;
+    driveLink.target = "_blank";
+    driveLink.rel = "noopener noreferrer";
+    driveLink.className = "rbadge rbadge-drive";
+    driveLink.textContent = "📁 Drive 저장됨";
+    badges.appendChild(driveLink);
+  }
+
+  if (data.email_sent) {
+    const emailBadge = document.createElement("span");
+    emailBadge.className = "rbadge rbadge-email";
+    emailBadge.textContent = "✉️ 이메일 전송됨";
+    badges.appendChild(emailBadge);
+  }
+
+  if (data.drive_error) {
+    const warningBadge = document.createElement("span");
+    warningBadge.className = "rbadge rbadge-warn";
+    warningBadge.textContent = "⚠️ Drive 저장 실패";
+    badges.appendChild(warningBadge);
+  }
+}
+
 function resetAll() {
   stopTimer();
   if (stream) stream.getTracks().forEach(t => t.stop());
   mediaRecorder = null; audioChunks = []; stream = null;
   timerSeconds = 0; currentMinutes = ""; currentFilename = "";
   document.getElementById("transcript-text").value = "";
-  document.getElementById("minutes-body").innerHTML = "";
-  document.getElementById("result-badges").innerHTML = "";
+  document.getElementById("minutes-body").replaceChildren();
+  document.getElementById("result-badges").replaceChildren();
   setMainState("idle");
 }
 
@@ -273,7 +374,7 @@ async function loadTemplates() {
   try {
     const res = await fetch("/api/templates");
     const data = await res.json();
-    allTemplates = data.templates || [];
+    allTemplates = [...(data.templates || []), ...loadCustomTemplates()];
     allLanguages = data.languages || [];
     renderTemplateSelect();
     renderLanguageSelect();
@@ -284,20 +385,40 @@ function renderTemplateSelect() {
   const sel = document.getElementById("template-select");
   if (!sel) return;
   const saved = localStorage.getItem("template_id") || "general";
-  sel.innerHTML = allTemplates.map(t =>
-    `<option value="${t.id}" ${t.id === saved ? "selected" : ""}>${t.name}${t.is_preset ? "" : " ★"}</option>`
-  ).join("");
-  sel.addEventListener("change", () => localStorage.setItem("template_id", sel.value));
+  const selectedId = allTemplates.some(t => t.id === saved) ? saved : "general";
+  const fragment = document.createDocumentFragment();
+
+  allTemplates.forEach(template => {
+    const option = document.createElement("option");
+    option.value = template.id;
+    option.selected = template.id === selectedId;
+    option.textContent = `${template.name}${template.is_preset ? "" : " ★"}`;
+    fragment.appendChild(option);
+  });
+
+  sel.replaceChildren(fragment);
+  sel.onchange = () => localStorage.setItem("template_id", sel.value);
+  localStorage.setItem("template_id", selectedId);
 }
 
 function renderLanguageSelect() {
   const sel = document.getElementById("language-select");
   if (!sel) return;
   const saved = localStorage.getItem("output_language") || "ko";
-  sel.innerHTML = allLanguages.map(l =>
-    `<option value="${l.code}" ${l.code === saved ? "selected" : ""}>${l.name}</option>`
-  ).join("");
-  sel.addEventListener("change", () => localStorage.setItem("output_language", sel.value));
+  const fragment = document.createDocumentFragment();
+  const selectedCode = allLanguages.some(language => language.code === saved) ? saved : "ko";
+
+  allLanguages.forEach(language => {
+    const option = document.createElement("option");
+    option.value = language.code;
+    option.selected = language.code === selectedCode;
+    option.textContent = language.name;
+    fragment.appendChild(option);
+  });
+
+  sel.replaceChildren(fragment);
+  sel.onchange = () => localStorage.setItem("output_language", sel.value);
+  localStorage.setItem("output_language", selectedCode);
 }
 
 function openTemplateManager() {
@@ -341,38 +462,38 @@ async function saveTemplate() {
   if (!name || !prompt) { alert("이름과 프롬프트를 입력해 주세요."); return; }
 
   const existing = allTemplates.find(t => t.id === editingTemplateId);
-  let res;
-  if (editingTemplateId && !existing?.is_preset) {
-    res = await fetch(`/api/templates/${editingTemplateId}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description: desc, prompt }),
-    });
+  const customTemplates = loadCustomTemplates();
+  let template;
+
+  if (editingTemplateId && existing && !existing.is_preset) {
+    template = { ...existing, name, description: desc, prompt, is_preset: false };
+    const updated = customTemplates.map(item => item.id === template.id ? template : item);
+    saveCustomTemplates(updated);
   } else {
-    const body = editingTemplateId
-      ? { name, description: desc, prompt }  // fork preset
-      : { name, description: desc, prompt };
-    const url = editingTemplateId ? `/api/templates/${editingTemplateId}` : "/api/templates";
-    const method = editingTemplateId ? "PUT" : "POST";
-    res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    template = {
+      id: generateTemplateId(),
+      name,
+      description: desc,
+      prompt,
+      is_preset: false,
+      ...(existing?.is_preset ? { forked_from: existing.id } : {}),
+    };
+    saveCustomTemplates([...customTemplates, template]);
   }
 
-  if (res.ok) {
-    document.getElementById("template-modal").classList.add("hidden");
-    await loadTemplates();
-  } else {
-    alert("저장 실패");
-  }
+  localStorage.setItem("template_id", template.id);
+  document.getElementById("template-modal").classList.add("hidden");
+  await loadTemplates();
 }
 
 async function deleteTemplate() {
   if (!editingTemplateId) return;
   if (!confirm("이 템플릿을 삭제할까요?")) return;
-  const res = await fetch(`/api/templates/${editingTemplateId}`, { method: "DELETE" });
-  if (res.ok) {
-    document.getElementById("template-modal").classList.add("hidden");
-    await loadTemplates();
-  } else {
-    alert("삭제 실패");
+  const customTemplates = loadCustomTemplates().filter(template => template.id !== editingTemplateId);
+  saveCustomTemplates(customTemplates);
+  if (localStorage.getItem("template_id") === editingTemplateId) {
+    localStorage.setItem("template_id", "general");
   }
+  document.getElementById("template-modal").classList.add("hidden");
+  await loadTemplates();
 }

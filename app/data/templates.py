@@ -1,8 +1,4 @@
 """회의록 템플릿 관리"""
-import json
-from pathlib import Path
-
-CUSTOM_FILE = Path(__file__).parent / "custom_templates.json"
 
 PRESET_TEMPLATES = [
     {
@@ -222,45 +218,12 @@ LANGUAGES = [
 LANGUAGE_NAMES = {lang["code"]: lang["name"] for lang in LANGUAGES}
 
 
-def _load_custom() -> list:
-    if not CUSTOM_FILE.exists():
-        return []
-    return json.loads(CUSTOM_FILE.read_text(encoding="utf-8"))
-
-
-def _save_custom(templates: list):
-    CUSTOM_FILE.write_text(json.dumps(templates, ensure_ascii=False, indent=2), encoding="utf-8")
-
-
 def get_all_templates() -> list:
-    return PRESET_TEMPLATES + _load_custom()
+    return list(PRESET_TEMPLATES)
 
 
 def get_template(template_id: str) -> dict | None:
-    for t in get_all_templates():
+    for t in PRESET_TEMPLATES:
         if t["id"] == template_id:
             return t
     return None
-
-
-def save_custom_template(template: dict) -> dict:
-    customs = _load_custom()
-    # 업데이트
-    for i, t in enumerate(customs):
-        if t["id"] == template["id"]:
-            customs[i] = template
-            _save_custom(customs)
-            return template
-    # 새로 추가
-    customs.append(template)
-    _save_custom(customs)
-    return template
-
-
-def delete_custom_template(template_id: str) -> bool:
-    customs = _load_custom()
-    new_customs = [t for t in customs if t["id"] != template_id]
-    if len(new_customs) == len(customs):
-        return False
-    _save_custom(new_customs)
-    return True

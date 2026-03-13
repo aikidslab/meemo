@@ -11,9 +11,13 @@ async def generate_minutes(
     api_key: str,
     template_id: str = "general",
     output_language: str = "ko",
+    template_prompt: str | None = None,
 ) -> str:
-    template = get_template(template_id)
-    system_prompt = template["prompt"] if template else _DEFAULT_PROMPT
+    if template_prompt and template_prompt.strip():
+        system_prompt = template_prompt.strip()
+    else:
+        template = get_template(template_id)
+        system_prompt = template["prompt"] if template else _DEFAULT_PROMPT
 
     lang_name = LANGUAGE_NAMES.get(output_language, "한국어")
     lang_instruction = (

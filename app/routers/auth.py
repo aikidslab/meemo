@@ -4,10 +4,10 @@ import base64
 import hashlib
 import secrets
 import httpx
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse, JSONResponse
 from google_auth_oauthlib.flow import Flow
-from app.sessions import sessions
+from app.sessions import create_session, delete_session, get_session, session_cookie_max_age
 
 router = APIRouter()
 
@@ -37,8 +37,23 @@ def _build_flow(redirect_uri: str) -> Flow:
 
 
 def _redirect_uri(request: Request) -> str:
-    host = request.headers.get("host", "localhost:8443")
-    return f"https://{host}/auth/callback"
+    public_base_url = os.environ.get("PUBLIC_BASE_URL", "").rstrip("/")
+    if public_base_url:
+        return f"{public_base_url}/auth/callback"
+
+    forwarded_proto = request.headers.get("x-forwarded-proto")
+    scheme = (forwarded_proto or request.url.scheme or "https").split(",")[0].strip()
+    host = request.headers.get("x-forwarded-host") or request.headers.get("host", "localhost:8443")
+    return f"{scheme}://{host}/auth/callback"
+
+
+def _secure_cookie(request: Request) -> bool:
+    public_base_url = os.environ.get("PUBLIC_BASE_URL", "")
+    if public_base_url:
+        return public_base_url.startswith("https://")
+    forwarded_proto = request.headers.get("x-forwarded-proto")
+    scheme = (forwarded_proto or request.url.scheme or "").split(",")[0].strip()
+    return scheme == "https"
 
 
 def _make_pkce():
@@ -63,15 +78,22 @@ async def login(request: Request):
         code_challenge_method="S256",
     )
     response = RedirectResponse(auth_url)
-    response.set_cookie("oauth_state", state, httponly=True, samesite="lax")
-    response.set_cookie("code_verifier", code_verifier, httponly=True, samesite="lax")
+    secure = _secure_cookie(request)
+    response.set_cookie("oauth_state", state, httponly=True, samesite="lax", secure=secure, max_age=600)
+    response.set_cookie("code_verifier", code_verifier, httponly=True, samesite="lax", secure=secure, max_age=600)
     return response
 
 
 @router.get("/callback")
 async def callback(request: Request, code: str, state: str = ""):
+    expected_state = request.cookies.get("oauth_state", "")
+    if not expected_state or state != expected_state:
+        raise HTTPException(status_code=400, detail="OAuth state 검증에 실패했습니다. 다시 로그인해 주세요.")
+
     redirect_uri = _redirect_uri(request)
     code_verifier = request.cookies.get("code_verifier", "")
+    if not code_verifier:
+        raise HTTPException(status_code=400, detail="OAuth verifier가 없습니다. 다시 로그인해 주세요.")
     flow = _build_flow(redirect_uri)
     flow.fetch_token(code=code, code_verifier=code_verifier)
     creds = flow.credentials
@@ -81,10 +103,11 @@ async def callback(request: Request, code: str, state: str = ""):
             "https://www.googleapis.com/oauth2/v2/userinfo",
             headers={"Authorization": f"Bearer {creds.token}"},
         )
+    resp.raise_for_status()
     userinfo = resp.json()
 
     session_id = str(uuid.uuid4())
-    sessions[session_id] = {
+    create_session(session_id, {
         "email": userinfo.get("email", ""),
         "name": userinfo.get("name", ""),
         "picture": userinfo.get("picture", ""),
@@ -94,22 +117,30 @@ async def callback(request: Request, code: str, state: str = ""):
         "client_id": creds.client_id,
         "client_secret": creds.client_secret,
         "scopes": list(creds.scopes or SCOPES),
-    }
+    })
 
     response = RedirectResponse("/")
-    response.set_cookie("session_id", session_id, httponly=True, samesite="lax")
-    response.delete_cookie("oauth_state")
-    response.delete_cookie("code_verifier")
+    secure = _secure_cookie(request)
+    response.set_cookie(
+        "session_id",
+        session_id,
+        httponly=True,
+        samesite="lax",
+        secure=secure,
+        max_age=session_cookie_max_age(),
+    )
+    response.delete_cookie("oauth_state", httponly=True, samesite="lax", secure=secure)
+    response.delete_cookie("code_verifier", httponly=True, samesite="lax", secure=secure)
     return response
 
 
 @router.get("/logout")
 async def logout(request: Request):
     session_id = request.cookies.get("session_id")
-    if session_id in sessions:
-        del sessions[session_id]
+    delete_session(session_id)
     response = RedirectResponse("/")
-    response.delete_cookie("session_id")
+    secure = _secure_cookie(request)
+    response.delete_cookie("session_id", httponly=True, samesite="lax", secure=secure)
     return response
 
 
@@ -121,7 +152,6 @@ async def status():
 
 @router.get("/me")
 async def me(request: Request):
-    from app.sessions import get_session
     session = get_session(request.cookies.get("session_id"))
     if not session:
         return JSONResponse({"logged_in": False})
