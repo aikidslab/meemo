@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Meemo — AI 회의록</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     SETUP WIZARD  (API 키 미설정 시 표시)
+════════════════════════════════════════ -->
+<div id="setup-wizard" class="wizard-overlay hidden">
+  <div class="wizard-container">
+
+    <!-- Brand header -->
+    <div class="wizard-brand">
+      <svg width="32" height="32" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="11" fill="var(--accent)"/><path d="M7 8.5C7 7.12 8.12 6 9.5 6S12 7.12 12 8.5v4C12 13.88 10.88 15 9.5 15S7 13.88 7 12.5v-4z" fill="white"/><path d="M14 10v2.5A4.5 4.5 0 019.5 17v0a4.5 4.5 0 01-4.5-4.5V10" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9.5" y1="17" x2="9.5" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="19" x2="12" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span>Meemo</span>
+      <p class="wizard-tagline">내 API 키로, 무료 AI 회의록</p>
+    </div>
+
+    <!-- Step indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot-1"></div>
+      <div class="step-line"></div>
+      <div class="step-dot" id="dot-2"></div>
+    </div>
+
+    <!-- STEP 1: Groq -->
+    <div class="wizard-step" id="step-1">
+      <div class="wizard-icon">🎙️</div>
+      <h2>음성 인식 키 설정</h2>
+      <p class="wizard-desc">Groq API 키로 녹음을 텍스트로 변환해요.<br><strong>무료로 하루 2시간</strong>까지 사용할 수 있습니다.</p>
+
+      <div class="key-input-card">
+        <div class="key-input-row">
+          <input type="password" id="groq-key-input" placeholder="gsk_로 시작하는 키를 붙여넣으세요" autocomplete="off">
+          <button class="eye-btn" onclick="toggleVisible('groq-key-input')">👁</button>
+        </div>
+        <a href="https://console.groq.com/keys" target="_blank" class="get-key-link">
+          🔑 Groq API 키 발급받기 →
+        </a>
+      </div>
+
+      <button class="btn-wizard-next" onclick="nextStep(1)" id="btn-step1">다음</button>
+    </div>
+
+    <!-- STEP 2: Google -->
+    <div class="wizard-step hidden" id="step-2">
+      <div class="wizard-icon">📁</div>
+      <h2>Google 연동 <span class="optional-badge">선택</span></h2>
+      <p class="wizard-desc">로그인하면 녹음 파일과 회의록이 Google Drive에 자동 저장되고, 회의록을 이메일로 받아볼 수 있어요.</p>
+
+      <div id="step2-login-section">
+        <div class="google-benefits">
+          <div class="benefit-item">📁 <span>Google Drive 자동 저장</span></div>
+          <div class="benefit-item">✉️ <span>Gmail로 회의록 수신</span></div>
+          <div class="benefit-item">🔒 <span>내 계정에만 저장</span></div>
+        </div>
+        <a href="/auth/login" class="btn-google">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84z"/></svg>
+          Google로 로그인
+        </a>
+      </div>
+
+      <div id="step2-google-error" class="google-oauth-error hidden">
+        <p>⚠️ Google 로그인을 사용하려면 서버에 Google OAuth 설정이 필요합니다.</p>
+        <p class="small-text">.env 파일에 GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET을 설정해 주세요.</p>
+      </div>
+
+      <button class="btn-wizard-next" onclick="finishSetup()">시작하기 →</button>
+      <button class="btn-wizard-back" onclick="prevStep(2)">← 이전</button>
+    </div>
+
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════
+     MAIN APP
+════════════════════════════════════════ -->
+<div id="main-app" class="hidden">
+
+  <header class="header">
+    <div class="meemo-logo">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="11" fill="var(--accent)"/><path d="M7 8.5C7 7.12 8.12 6 9.5 6S12 7.12 12 8.5v4C12 13.88 10.88 15 9.5 15S7 13.88 7 12.5v-4z" fill="white"/><path d="M14 10v2.5A4.5 4.5 0 019.5 17v0a4.5 4.5 0 01-4.5-4.5V10" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9.5" y1="17" x2="9.5" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="19" x2="12" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <span class="meemo-wordmark">Meemo</span>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" onclick="openSettings()" title="설정">⚙️</button>
+      <div id="user-chip" class="user-chip hidden" onclick="confirmLogout()">
+        <img id="user-avatar" src="" alt="">
+        <span id="user-name"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Settings Drawer -->
+  <div id="settings-drawer" class="drawer hidden">
+    <div class="drawer-handle" onclick="closeSettings()"></div>
+    <div class="drawer-content">
+      <h3 class="drawer-title">설정</h3>
+
+      <div class="setting-row">
+        <span>Groq API 키</span>
+        <button class="text-btn" onclick="showWizardAt(1)">변경</button>
+      </div>
+      <div class="setting-row">
+        <span>템플릿 관리</span>
+        <button class="text-btn" onclick="openTemplateManager()">관리</button>
+      </div>
+
+      <div class="drawer-divider"></div>
+
+      <div id="drawer-google-loggedin" class="hidden">
+        <div class="setting-row">
+          <div>
+            <div id="drawer-email" class="setting-email"></div>
+            <div class="small-text">Drive 저장 · 이메일 수신 활성화됨</div>
+          </div>
+          <a href="/auth/logout" class="text-btn danger">로그아웃</a>
+        </div>
+      </div>
+      <div id="drawer-google-login" class="hidden">
+        <a href="/auth/login" class="btn-google small">
+          <svg viewBox="0 0 24 24" width="16" height="16"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84z"/></svg>
+          Google 연동하기
+        </a>
+      </div>
+    </div>
+  </div>
+  <div id="drawer-backdrop" class="drawer-backdrop hidden" onclick="closeSettings()"></div>
+
+  <main class="main" data-state="idle">
+
+    <!-- IDLE -->
+    <div class="idle-view">
+      <div id="google-connect-banner" class="connect-banner hidden">
+        <span>📁 Google 연동 시 Drive 저장 + 이메일 알림</span>
+        <a href="/auth/login" class="banner-link">연동하기</a>
+      </div>
+      <button class="btn-record" onclick="startRecording()">
+        <span class="mic-icon">🎙️</span>
+        <span>녹음 시작</span>
+      </button>
+      <p class="idle-hint">버튼을 눌러 회의를 녹음하세요</p>
+    </div>
+
+    <!-- RECORDING -->
+    <div class="recording-view">
+      <div class="recording-label"><div class="rec-dot"></div><span>녹음 중</span></div>
+      <div class="timer" id="timer">00:00</div>
+      <div class="waveform">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+      <button class="btn-stop" onclick="stopRecording()">
+        <span class="stop-icon">⏹</span>
+        <span>녹음 완료</span>
+      </button>
+    </div>
+
+    <!-- PROCESSING -->
+    <div class="processing-view">
+      <div class="spinner"></div>
+      <p class="processing-label" id="processing-label">음성 인식 중...</p>
+      <p class="processing-hint">최대 30초 소요될 수 있습니다</p>
+    </div>
+
+    <!-- TRANSCRIPT READY -->
+    <div class="transcript-view">
+      <div class="card">
+        <div class="card-header">📝 녹취록 <span class="card-badge">수정 가능</span></div>
+        <textarea class="transcript-area" id="transcript-text" placeholder="녹취 내용이 여기에 표시됩니다..."></textarea>
+      </div>
+
+      <!-- 템플릿 & 언어 선택 -->
+      <div class="generate-options">
+        <div class="option-row">
+          <label class="option-label">📋 회의록 형식</label>
+          <div class="select-with-edit">
+            <select id="template-select" class="option-select"></select>
+            <button class="edit-template-btn" onclick="openTemplateEditor()" title="편집">✏️</button>
+          </div>
+        </div>
+        <div class="option-row">
+          <label class="option-label">🌐 출력 언어</label>
+          <select id="language-select" class="option-select"></select>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="generateMinutes()">회의록 생성하기</button>
+      <button class="btn btn-ghost" onclick="resetAll()">다시 녹음</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-view">
+      <div id="result-badges" class="result-badges"></div>
+      <div class="card">
+        <div class="card-header">📋 회의록</div>
+        <div class="minutes-body" id="minutes-body"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="copyMinutes()">📋 복사</button>
+        <button class="btn btn-secondary" onclick="downloadMinutes()">💾 저장</button>
+      </div>
+      <button class="btn btn-ghost" onclick="resetAll()">새 회의 시작</button>
+    </div>
+
+    <!-- ERROR -->
+    <div class="error-view">
+      <div class="error-icon">⚠️</div>
+      <p class="error-message" id="error-message"></p>
+      <button class="btn btn-primary" onclick="resetAll()">다시 시작</button>
+    </div>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════
+     TEMPLATE EDITOR MODAL
+════════════════════════════════════════ -->
+<div id="template-modal" class="modal-overlay hidden" onclick="closeTemplateModal(event)">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3 id="modal-title">템플릿 편집</h3>
+      <button class="modal-close" onclick="closeTemplateModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>이름</label>
+        <input type="text" id="tpl-name" class="form-input" placeholder="템플릿 이름">
+      </div>
+      <div class="form-row">
+        <label>설명</label>
+        <input type="text" id="tpl-desc" class="form-input" placeholder="간단한 설명">
+      </div>
+      <div class="form-row">
+        <label>프롬프트 <span class="hint-text">(LLM에 전달되는 지시문)</span></label>
+        <textarea id="tpl-prompt" class="form-textarea" rows="14" placeholder="회의록 형식과 작성 지침을 입력하세요..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div id="tpl-delete-wrap">
+        <button class="btn btn-danger-ghost" onclick="deleteTemplate()">삭제</button>
+      </div>
+      <div class="modal-footer-right">
+        <button class="btn btn-ghost" onclick="closeTemplateModal()">취소</button>
+        <button class="btn btn-primary" onclick="saveTemplate()">저장</button>
+      </div>
+    </div>
+    <p id="tpl-fork-note" class="fork-note hidden">⚠️ 기본 템플릿은 수정 시 새 템플릿으로 저장됩니다.</p>
+  </div>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

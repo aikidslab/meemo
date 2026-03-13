@@ -1,0 +1,266 @@
+"""회의록 템플릿 관리"""
+import json
+from pathlib import Path
+
+CUSTOM_FILE = Path(__file__).parent / "custom_templates.json"
+
+PRESET_TEMPLATES = [
+    {
+        "id": "general",
+        "name": "일반 회의",
+        "description": "기본 표준 회의록",
+        "is_preset": True,
+        "prompt": """당신은 회의록 작성 전문가입니다. 다음 형식으로 회의록을 작성하세요.
+
+# 회의록
+
+## 기본 정보
+- **일시**: [날짜 및 시간]
+- **장소**: [회의 장소 또는 온라인]
+- **참석자**: [이름 목록]
+
+## 안건
+1. [안건 1]
+
+## 논의 내용
+
+### 1. [안건 1]
+- [주요 논의 포인트]
+
+## 결정 사항
+- [ ] [결정 내용]
+
+## 액션 아이템
+| 번호 | 내용 | 담당자 | 기한 |
+|------|------|--------|------|
+| 1 | [할 일] | [담당자] | [기한] |
+
+## 미결 사항
+- [다음 회의에서 논의할 사항]
+
+## 다음 회의
+- **일시**: [예정 일시]
+
+정보가 불명확하면 [미확인]으로 표시하세요.""",
+    },
+    {
+        "id": "project",
+        "name": "프로젝트 미팅",
+        "description": "스프린트/프로젝트 진행 회의",
+        "is_preset": True,
+        "prompt": """당신은 프로젝트 회의록 작성 전문가입니다. 다음 형식으로 작성하세요.
+
+# 프로젝트 미팅 회의록
+
+## 기본 정보
+- **일시**: [날짜]
+- **프로젝트**: [프로젝트명]
+- **참석자**: [이름 목록]
+
+## 진행 현황
+- **완료된 작업**:
+- **진행 중인 작업**:
+- **지연/블로커**:
+
+## 이슈 및 리스크
+| 이슈 | 심각도 | 담당자 | 해결 방안 |
+|------|--------|--------|-----------|
+| [이슈] | [상/중/하] | [담당자] | [방안] |
+
+## 결정 사항
+- [ ] [결정 내용]
+
+## 다음 스프린트 계획
+- [계획 항목]
+
+## 액션 아이템
+| 내용 | 담당자 | 기한 |
+|------|--------|------|
+| [할 일] | [담당자] | [기한] |""",
+    },
+    {
+        "id": "oneonone",
+        "name": "1on1 미팅",
+        "description": "개인 면담 및 피드백 회의",
+        "is_preset": True,
+        "prompt": """당신은 1on1 미팅 회의록 작성 전문가입니다. 다음 형식으로 작성하세요.
+
+# 1on1 미팅 회의록
+
+## 기본 정보
+- **일시**: [날짜]
+- **참석자**: [매니저 / 팀원]
+
+## 현황 공유
+- **잘 되고 있는 것**:
+- **어려운 점**:
+- **필요한 지원**:
+
+## 피드백
+- **긍정적 피드백**:
+- **개선 제안**:
+
+## 목표 점검
+| 목표 | 이전 상태 | 현재 상태 | 다음 목표 |
+|------|-----------|-----------|-----------|
+| [목표] | [%] | [%] | [계획] |
+
+## 액션 아이템
+| 내용 | 담당자 | 기한 |
+|------|--------|------|
+| [할 일] | [담당자] | [기한] |
+
+## 다음 1on1
+- **일시**: [예정 일시]""",
+    },
+    {
+        "id": "brainstorm",
+        "name": "브레인스토밍",
+        "description": "아이디어 회의 및 기획 세션",
+        "is_preset": True,
+        "prompt": """당신은 브레인스토밍 회의록 작성 전문가입니다. 다음 형식으로 작성하세요.
+
+# 브레인스토밍 회의록
+
+## 기본 정보
+- **일시**: [날짜]
+- **주제**: [브레인스토밍 주제]
+- **참석자**: [이름 목록]
+
+## 제안된 아이디어
+| # | 아이디어 | 제안자 | 장점 | 단점 |
+|---|---------|--------|------|------|
+| 1 | [아이디어] | [제안자] | [장점] | [단점] |
+
+## 채택된 아이디어
+- [채택 이유 포함]
+
+## 보류/기각된 아이디어
+- [사유 포함]
+
+## 다음 단계
+- [ ] [실행 계획]
+
+## 결정 사항
+- [최종 결정]""",
+    },
+    {
+        "id": "standup",
+        "name": "데일리 스탠드업",
+        "description": "짧은 일일 스탠드업 미팅",
+        "is_preset": True,
+        "prompt": """당신은 스탠드업 회의록 작성 전문가입니다. 간결하게 다음 형식으로 작성하세요.
+
+# 데일리 스탠드업
+
+## 기본 정보
+- **일시**: [날짜]
+- **참석자**: [이름 목록]
+
+## 팀원별 업데이트
+
+| 이름 | 어제 한 일 | 오늘 할 일 | 블로커 |
+|------|-----------|-----------|--------|
+| [이름] | [작업] | [작업] | [없음/있으면 내용] |
+
+## 공유 사항
+- [팀 전체 공유 내용]
+
+## 블로커 해결 방안
+- [블로커가 있다면 해결책]""",
+    },
+    {
+        "id": "client",
+        "name": "고객 미팅",
+        "description": "고객사와의 외부 미팅",
+        "is_preset": True,
+        "prompt": """당신은 고객 미팅 회의록 작성 전문가입니다. 다음 형식으로 작성하세요.
+
+# 고객 미팅 회의록
+
+## 기본 정보
+- **일시**: [날짜]
+- **고객사**: [고객사명]
+- **참석자 (고객)**: [이름/직책]
+- **참석자 (우리)**: [이름/직책]
+
+## 고객 요구사항
+- [요구사항 및 Pain Point]
+
+## 논의 내용
+- [주요 논의 사항]
+
+## 제안 및 솔루션
+- [우리 측 제안]
+
+## 합의 사항
+- [ ] [합의 내용]
+
+## 후속 조치
+| 내용 | 담당자 | 기한 |
+|------|--------|------|
+| [할 일] | [담당자] | [기한] |
+
+## 다음 미팅
+- **일시**: [예정 일시]
+- **안건**: [사전 준비 사항]""",
+    },
+]
+
+LANGUAGES = [
+    {"code": "ko", "name": "한국어"},
+    {"code": "en", "name": "English"},
+    {"code": "ja", "name": "日本語"},
+    {"code": "zh", "name": "中文"},
+    {"code": "es", "name": "Español"},
+    {"code": "fr", "name": "Français"},
+    {"code": "de", "name": "Deutsch"},
+    {"code": "vi", "name": "Tiếng Việt"},
+    {"code": "th", "name": "ภาษาไทย"},
+]
+
+LANGUAGE_NAMES = {lang["code"]: lang["name"] for lang in LANGUAGES}
+
+
+def _load_custom() -> list:
+    if not CUSTOM_FILE.exists():
+        return []
+    return json.loads(CUSTOM_FILE.read_text(encoding="utf-8"))
+
+
+def _save_custom(templates: list):
+    CUSTOM_FILE.write_text(json.dumps(templates, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def get_all_templates() -> list:
+    return PRESET_TEMPLATES + _load_custom()
+
+
+def get_template(template_id: str) -> dict | None:
+    for t in get_all_templates():
+        if t["id"] == template_id:
+            return t
+    return None
+
+
+def save_custom_template(template: dict) -> dict:
+    customs = _load_custom()
+    # 업데이트
+    for i, t in enumerate(customs):
+        if t["id"] == template["id"]:
+            customs[i] = template
+            _save_custom(customs)
+            return template
+    # 새로 추가
+    customs.append(template)
+    _save_custom(customs)
+    return template
+
+
+def delete_custom_template(template_id: str) -> bool:
+    customs = _load_custom()
+    new_customs = [t for t in customs if t["id"] != template_id]
+    if len(new_customs) == len(customs):
+        return False
+    _save_custom(new_customs)
+    return True
