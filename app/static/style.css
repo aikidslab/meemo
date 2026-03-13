@@ -135,25 +135,25 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
-  padding: 24px 0 44px;
+  gap: 16px;
+  padding: 20px 0 38px;
 }
 
 .wizard-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   text-align: center;
 }
 
 .wizard-emblem {
   position: relative;
-  width: 74px;
-  height: 74px;
+  width: 66px;
+  height: 66px;
   display: grid;
   place-items: center;
-  border-radius: 26px;
+  border-radius: 22px;
   color: #f7fffc;
   background:
     linear-gradient(180deg, rgba(126, 240, 208, 0.3), rgba(68, 171, 148, 0.22)),
@@ -170,18 +170,18 @@ a:active {
   content: "";
   position: absolute;
   inset: 1px;
-  border-radius: 24px;
+  border-radius: 20px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 46%);
   pointer-events: none;
 }
 
 .wizard-emblem .brand-mark-svg {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
 }
 
 .wizard-brand span {
-  font-size: clamp(3rem, 7vw, 3.9rem);
+  font-size: clamp(2.35rem, 8vw, 3.2rem);
   font-weight: 760;
   line-height: 0.95;
   letter-spacing: -0.06em;
@@ -192,7 +192,7 @@ a:active {
 }
 
 .wizard-tagline {
-  font-size: 1rem;
+  font-size: 0.94rem;
   color: var(--text-muted);
   line-height: 1.5;
 }
@@ -200,8 +200,8 @@ a:active {
 .step-indicator {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 18px;
+  gap: 10px;
+  padding: 10px 16px;
   border-radius: 999px;
   background: rgba(11, 22, 41, 0.52);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -210,8 +210,8 @@ a:active {
 }
 
 .step-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -226,7 +226,7 @@ a:active {
 }
 
 .step-line {
-  width: 58px;
+  width: 46px;
   height: 2px;
   border-radius: 999px;
   background: linear-gradient(90deg, rgba(126, 240, 208, 0.4), rgba(255, 255, 255, 0.06));
@@ -239,9 +239,9 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
   text-align: center;
-  padding: 32px 28px 28px;
+  padding: 26px 22px 22px;
   border-radius: var(--radius-xl);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02)),
@@ -266,11 +266,11 @@ a:active {
 
 .wizard-icon {
   position: relative;
-  width: 96px;
-  height: 96px;
+  width: 82px;
+  height: 82px;
   display: grid;
   place-items: center;
-  border-radius: 28px;
+  border-radius: 24px;
   color: #effbf8;
   background:
     linear-gradient(180deg, rgba(126, 240, 208, 0.16), rgba(126, 240, 208, 0.06)),
@@ -285,7 +285,7 @@ a:active {
   content: "";
   position: absolute;
   inset: 1px;
-  border-radius: 27px;
+  border-radius: 23px;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 42%);
   pointer-events: none;
 }
@@ -298,21 +298,21 @@ a:active {
 }
 
 .wizard-icon-svg {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
 }
 
 .wizard-step h2 {
-  font-size: clamp(2.15rem, 6vw, 2.75rem);
-  line-height: 1.05;
+  font-size: clamp(1.85rem, 5.8vw, 2.35rem);
+  line-height: 1.08;
   letter-spacing: -0.06em;
   font-weight: 720;
 }
 
 .wizard-desc {
   max-width: 32ch;
-  font-size: 1.05rem;
-  line-height: 1.72;
+  font-size: 0.97rem;
+  line-height: 1.64;
   color: var(--text-muted);
 }
 
@@ -328,7 +328,7 @@ a:active {
   margin-left: 8px;
   padding: 5px 10px;
   border-radius: 999px;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 640;
   color: var(--text-muted);
   background: rgba(255, 255, 255, 0.08);
@@ -362,8 +362,8 @@ a:active {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 78px;
-  padding: 10px 12px 10px 18px;
+  min-height: 70px;
+  padding: 8px 10px 8px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -373,7 +373,7 @@ a:active {
   border: none;
   background: transparent;
   color: var(--text);
-  font-size: 1.35rem;
+  font-size: 1.12rem;
   letter-spacing: -0.03em;
   outline: none;
 }
@@ -383,12 +383,12 @@ a:active {
 }
 
 .eye-btn {
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 16px;
+  border-radius: 14px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
   cursor: pointer;
@@ -404,10 +404,10 @@ a:active {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 58px;
-  padding: 14px 18px;
+  min-height: 54px;
+  padding: 12px 16px;
   color: var(--accent);
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   font-weight: 650;
   text-decoration: none;
   background: linear-gradient(180deg, rgba(126, 240, 208, 0.06), rgba(126, 240, 208, 0.03));
@@ -430,11 +430,11 @@ a:active {
 
 .btn-wizard-next {
   width: 100%;
-  min-height: 64px;
+  min-height: 58px;
   border: none;
-  border-radius: 22px;
+  border-radius: 18px;
   color: #08241f;
-  font-size: 1.18rem;
+  font-size: 1.04rem;
   font-weight: 760;
   cursor: pointer;
   background:
@@ -520,7 +520,7 @@ a:active {
   align-items: center;
   gap: 14px;
   justify-content: space-between;
-  padding: 16px 18px;
+  padding: 14px 16px;
   background: rgba(8, 18, 34, 0.56);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(30px) saturate(165%);
@@ -535,12 +535,12 @@ a:active {
 .meemo-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .meemo-logo-mark {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   display: grid;
   place-items: center;
   border-radius: 15px;
@@ -553,20 +553,20 @@ a:active {
 }
 
 .meemo-logo-mark .brand-mark-svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .meemo-wordmark {
-  font-size: 1.2rem;
+  font-size: 1.08rem;
   font-weight: 720;
   letter-spacing: -0.04em;
   color: var(--text);
 }
 
 .icon-btn {
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
   border-radius: 14px;
@@ -585,8 +585,8 @@ a:active {
 }
 
 .toolbar-icon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .user-chip {
@@ -615,8 +615,8 @@ a:active {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
-  padding: clamp(28px, 5vw, 56px) 20px 36px;
+  gap: 22px;
+  padding: clamp(22px, 4vw, 40px) 18px 30px;
 }
 
 .main[data-state] .idle-view,
@@ -654,13 +654,14 @@ a:active {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: 20px;
+  padding: 12px 14px;
+  border-radius: 18px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
     rgba(10, 20, 36, 0.56);
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: var(--text-muted);
+  font-size: 0.88rem;
   box-shadow: var(--shadow-sm);
 }
 
@@ -673,15 +674,15 @@ a:active {
 
 .btn-record,
 .btn-stop {
-  width: 164px;
-  height: 164px;
+  width: 148px;
+  height: 148px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 46px;
+  border-radius: 38px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   cursor: pointer;
   color: var(--text);
   background:
@@ -690,6 +691,8 @@ a:active {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.18),
     0 26px 50px rgba(1, 8, 20, 0.32);
+  font-size: 0.94rem;
+  font-weight: 660;
   backdrop-filter: blur(26px) saturate(165%);
 }
 
@@ -702,11 +705,11 @@ a:active {
 }
 
 .record-icon-shell {
-  width: 74px;
-  height: 74px;
+  width: 62px;
+  height: 62px;
   display: grid;
   place-items: center;
-  border-radius: 24px;
+  border-radius: 20px;
   color: #f3fffb;
   background:
     linear-gradient(180deg, rgba(126, 240, 208, 0.28), rgba(57, 214, 174, 0.16)),
@@ -726,8 +729,8 @@ a:active {
 
 .mic-icon,
 .stop-icon {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
 }
 
 .idle-hint,
@@ -742,7 +745,7 @@ a:active {
 }
 
 .idle-hint {
-  font-size: 0.98rem;
+  font-size: 0.9rem;
 }
 
 .recording-label {
@@ -769,7 +772,7 @@ a:active {
 }
 
 .timer {
-  font-size: clamp(2.6rem, 9vw, 4rem);
+  font-size: clamp(2.2rem, 8vw, 3.5rem);
   font-weight: 260;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -822,11 +825,11 @@ a:active {
 }
 
 .processing-label {
-  font-size: 1.02rem;
+  font-size: 0.96rem;
 }
 
 .processing-hint {
-  font-size: 0.92rem;
+  font-size: 0.84rem;
 }
 
 .card,
@@ -835,7 +838,7 @@ a:active {
     linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03)),
     rgba(10, 20, 36, 0.58);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
+  border-radius: 24px;
   box-shadow: var(--shadow-md);
 }
 
@@ -847,10 +850,10 @@ a:active {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 620;
 }
 
@@ -874,36 +877,36 @@ a:active {
 .transcript-area {
   min-height: 180px;
   max-height: 360px;
-  padding: 20px;
+  padding: 18px;
   resize: vertical;
   border: none;
   background: transparent;
-  font-size: 1rem;
-  line-height: 1.75;
+  font-size: 0.96rem;
+  line-height: 1.68;
 }
 
 .minutes-body {
-  padding: 20px;
+  padding: 18px;
   max-height: 440px;
   overflow-y: auto;
-  font-size: 0.98rem;
-  line-height: 1.78;
+  font-size: 0.92rem;
+  line-height: 1.7;
 }
 
 .minutes-body h1 {
   margin-bottom: 14px;
-  font-size: 1.4rem;
+  font-size: 1.24rem;
 }
 
 .minutes-body h2 {
   margin: 18px 0 10px;
   color: var(--text-muted);
-  font-size: 1.02rem;
+  font-size: 0.96rem;
 }
 
 .minutes-body h3 {
   margin: 14px 0 8px;
-  font-size: 0.98rem;
+  font-size: 0.92rem;
 }
 
 .minutes-body p,
@@ -942,8 +945,8 @@ a:active {
 .generate-options {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px;
+  gap: 12px;
+  padding: 16px;
 }
 
 .option-row {
@@ -956,7 +959,7 @@ a:active {
 .option-label {
   flex-shrink: 0;
   color: var(--text-muted);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 .select-with-edit {
@@ -968,11 +971,12 @@ a:active {
 
 .option-select {
   flex: 1;
-  min-height: 46px;
+  min-height: 42px;
   padding: 0 14px;
   border-radius: 14px;
   cursor: pointer;
   appearance: none;
+  font-size: 0.9rem;
 }
 
 .option-select:focus,
@@ -998,12 +1002,12 @@ a:active {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0 20px;
   border: 1px solid transparent;
-  border-radius: 18px;
+  border-radius: 16px;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 690;
   cursor: pointer;
 }
@@ -1052,7 +1056,7 @@ a:active {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0 16px;
   border-radius: 18px;
   color: var(--text);
@@ -1323,44 +1327,114 @@ a:active {
 @media (max-width: 640px) {
   .wizard-overlay {
     align-items: flex-start;
+    padding: 16px;
   }
 
   .wizard-container {
-    padding-top: 18px;
+    gap: 14px;
+    padding-top: 10px;
+    padding-bottom: 24px;
   }
 
   .wizard-step {
-    padding: 28px 20px 22px;
-    border-radius: 30px;
+    gap: 16px;
+    padding: 22px 18px 18px;
+    border-radius: 26px;
   }
 
   .wizard-step h2 {
-    font-size: 1.95rem;
+    font-size: 1.68rem;
   }
 
   .wizard-desc {
-    font-size: 0.98rem;
+    font-size: 0.9rem;
+    line-height: 1.58;
   }
 
   .key-input-row input {
-    font-size: 1.12rem;
+    font-size: 1rem;
   }
 
-  .header {
-    padding: 14px 16px;
+  .wizard-brand span {
+    font-size: 2.3rem;
+  }
+
+  .wizard-tagline {
+    font-size: 0.88rem;
+  }
+
+  .wizard-icon {
+    width: 74px;
+    height: 74px;
+    border-radius: 22px;
+  }
+
+  .wizard-icon-svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .key-input-row {
+    min-height: 62px;
+    padding: 8px 10px 8px 14px;
+  }
+
+  .eye-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .get-key-link {
+    min-height: 50px;
+    font-size: 0.92rem;
+  }
+
+  .btn-wizard-next {
+    min-height: 54px;
+    font-size: 0.98rem;
   }
 
   .btn-record,
   .btn-stop {
-    width: 150px;
-    height: 150px;
-    border-radius: 40px;
+    width: 134px;
+    height: 134px;
+    border-radius: 34px;
   }
 
   .record-icon-shell {
-    width: 68px;
-    height: 68px;
-    border-radius: 22px;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+  }
+
+  .mic-icon,
+  .stop-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .main {
+    gap: 18px;
+    padding: 18px 14px 24px;
+  }
+
+  .connect-banner {
+    font-size: 0.8rem;
+    align-items: flex-start;
+  }
+
+  .timer {
+    font-size: 2rem;
+  }
+
+  .card,
+  .generate-options {
+    border-radius: 20px;
+  }
+
+  .transcript-area,
+  .minutes-body {
+    padding: 16px;
   }
 
   .btn-row,
@@ -1381,5 +1455,74 @@ a:active {
 
   .modal-footer-right {
     gap: 10px;
+  }
+}
+
+@media (max-width: 430px) {
+  .wizard-emblem {
+    width: 58px;
+    height: 58px;
+    border-radius: 20px;
+  }
+
+  .wizard-emblem::before {
+    border-radius: 18px;
+  }
+
+  .wizard-emblem .brand-mark-svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .wizard-brand span {
+    font-size: 2.1rem;
+  }
+
+  .step-indicator {
+    padding: 8px 14px;
+    gap: 8px;
+  }
+
+  .step-line {
+    width: 36px;
+  }
+
+  .wizard-step h2 {
+    font-size: 1.52rem;
+  }
+
+  .wizard-desc {
+    font-size: 0.86rem;
+  }
+
+  .key-input-row input {
+    font-size: 0.94rem;
+  }
+
+  .btn-record,
+  .btn-stop {
+    width: 122px;
+    height: 122px;
+    border-radius: 30px;
+    gap: 10px;
+    font-size: 0.88rem;
+  }
+
+  .record-icon-shell {
+    width: 52px;
+    height: 52px;
+  }
+
+  .header {
+    padding: 12px 14px;
+  }
+
+  .meemo-wordmark {
+    font-size: 1rem;
+  }
+
+  .icon-btn {
+    width: 36px;
+    height: 36px;
   }
 }
