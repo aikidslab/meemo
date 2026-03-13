@@ -20,7 +20,14 @@
 
     <!-- Brand header -->
     <div class="wizard-brand">
-      <svg width="32" height="32" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="11" fill="var(--accent)"/><path d="M7 8.5C7 7.12 8.12 6 9.5 6S12 7.12 12 8.5v4C12 13.88 10.88 15 9.5 15S7 13.88 7 12.5v-4z" fill="white"/><path d="M14 10v2.5A4.5 4.5 0 019.5 17v0a4.5 4.5 0 01-4.5-4.5V10" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9.5" y1="17" x2="9.5" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="19" x2="12" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="wizard-emblem" aria-hidden="true">
+        <svg class="brand-mark-svg" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5.25a2.75 2.75 0 0 0-2.75 2.75v4a2.75 2.75 0 0 0 5.5 0V8A2.75 2.75 0 0 0 12 5.25Z" fill="currentColor"/>
+          <path d="M7.75 11.5v.5a4.25 4.25 0 0 0 8.5 0v-.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M12 16.25v2.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M9.5 18.5h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+      </div>
       <span>Meemo</span>
       <p class="wizard-tagline">내 API 키로, 무료 AI 회의록</p>
     </div>
@@ -34,7 +41,14 @@
 
     <!-- STEP 1: Groq -->
     <div class="wizard-step" id="step-1">
-      <div class="wizard-icon">🎙️</div>
+      <div class="wizard-icon" aria-hidden="true">
+        <svg class="wizard-icon-svg" viewBox="0 0 24 24" fill="none">
+          <path d="M12 4.75a3.25 3.25 0 0 0-3.25 3.25v4a3.25 3.25 0 0 0 6.5 0V8A3.25 3.25 0 0 0 12 4.75Z" fill="currentColor"/>
+          <path d="M7.25 11.75V12a4.75 4.75 0 0 0 9.5 0v-.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M12 16.75V19.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M9 19.25h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+      </div>
       <h2>음성 인식 키 설정</h2>
       <p class="wizard-desc">Groq API 키로 녹음을 텍스트로 변환해요.<br><strong>무료로 하루 2시간</strong>까지 사용할 수 있습니다.</p>
 
@@ -53,7 +67,14 @@
 
     <!-- STEP 2: Google -->
     <div class="wizard-step hidden" id="step-2">
-      <div class="wizard-icon">📁</div>
+      <div class="wizard-icon wizard-icon-folder" aria-hidden="true">
+        <svg class="wizard-icon-svg" viewBox="0 0 24 24" fill="none">
+          <path d="M4.75 8.5A2.75 2.75 0 0 1 7.5 5.75h3.02c.73 0 1.42.29 1.93.8l.8.8c.23.23.54.36.86.36h2.39a2.75 2.75 0 0 1 2.75 2.75v4.99A2.75 2.75 0 0 1 16.5 18H7.5a2.75 2.75 0 0 1-2.75-2.75V8.5Z" fill="currentColor" fill-opacity="0.22"/>
+          <path d="M4.75 9.5A2.75 2.75 0 0 1 7.5 6.75h3.02c.73 0 1.42.29 1.93.8l.8.8c.23.23.54.36.86.36h2.39a2.75 2.75 0 0 1 2.75 2.75v3.99A2.75 2.75 0 0 1 16.5 18H7.5a2.75 2.75 0 0 1-2.75-2.75V9.5Z" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M9 12.75h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M12 9.75v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
       <h2>Google 연동 <span class="optional-badge">선택</span></h2>
       <p class="wizard-desc">로그인하면 녹음 파일과 회의록이 Google Drive에 자동 저장되고, 회의록을 이메일로 받아볼 수 있어요.</p>
 
@@ -90,11 +111,23 @@
 
   <header class="header">
     <div class="meemo-logo">
-      <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="11" fill="var(--accent)"/><path d="M7 8.5C7 7.12 8.12 6 9.5 6S12 7.12 12 8.5v4C12 13.88 10.88 15 9.5 15S7 13.88 7 12.5v-4z" fill="white"/><path d="M14 10v2.5A4.5 4.5 0 019.5 17v0a4.5 4.5 0 01-4.5-4.5V10" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="9.5" y1="17" x2="9.5" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/><line x1="7" y1="19" x2="12" y2="19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      <div class="meemo-logo-mark" aria-hidden="true">
+        <svg class="brand-mark-svg" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5.25a2.75 2.75 0 0 0-2.75 2.75v4a2.75 2.75 0 0 0 5.5 0V8A2.75 2.75 0 0 0 12 5.25Z" fill="currentColor"/>
+          <path d="M7.75 11.5v.5a4.25 4.25 0 0 0 8.5 0v-.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M12 16.25v2.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M9.5 18.5h5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+        </svg>
+      </div>
       <span class="meemo-wordmark">Meemo</span>
     </div>
     <div class="header-right">
-      <button class="icon-btn" onclick="openSettings()" title="설정">⚙️</button>
+      <button class="icon-btn" onclick="openSettings()" title="설정" aria-label="설정">
+        <svg class="toolbar-icon" viewBox="0 0 24 24" fill="none">
+          <path d="M12 8.5A3.5 3.5 0 1 0 12 15.5A3.5 3.5 0 1 0 12 8.5Z" stroke="currentColor" stroke-width="1.7"/>
+          <path d="M19 12a1.04 1.04 0 0 0 .77 1l.14.04a1.25 1.25 0 0 1 .74 1.82l-.12.2a1.25 1.25 0 0 1-1.64.52l-.13-.06a1.05 1.05 0 0 0-1.26.28l-.08.11a1.04 1.04 0 0 0-.15 1.01l.05.13a1.25 1.25 0 0 1-.98 1.68l-.23.03a1.25 1.25 0 0 1-1.38-1.08l-.02-.14a1.04 1.04 0 0 0-.78-.88l-.14-.04a1.05 1.05 0 0 0-.98.24l-.1.1a1.25 1.25 0 0 1-1.9-.11l-.15-.19a1.25 1.25 0 0 1 .13-1.76l.11-.1c.28-.25.39-.64.29-1l-.05-.14a1.04 1.04 0 0 0-.78-.71l-.14-.03a1.25 1.25 0 0 1-1.01-1.72l.09-.22a1.25 1.25 0 0 1 1.54-.73l.14.04c.38.11.79-.02 1.04-.34l.08-.11c.22-.3.27-.69.13-1.04l-.05-.13a1.25 1.25 0 0 1 .98-1.69l.23-.03a1.25 1.25 0 0 1 1.38 1.08l.02.15c.05.4.33.73.72.86l.14.04c.36.11.76.02 1.03-.23l.1-.1a1.25 1.25 0 0 1 1.9.1l.15.2a1.25 1.25 0 0 1-.12 1.76l-.11.1a1.04 1.04 0 0 0-.29 1l.04.14c.11.38.41.66.79.74l.14.03A1.25 1.25 0 0 1 20.9 11.8l-.09.22a1.25 1.25 0 0 1-1.54.73l-.14-.04A1.02 1.02 0 0 0 19 12Z" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <div id="user-chip" class="user-chip hidden" onclick="confirmLogout()">
         <img id="user-avatar" src="" alt="">
         <span id="user-name"></span>
@@ -147,7 +180,14 @@
         <a href="/auth/login" class="banner-link">연동하기</a>
       </div>
       <button class="btn-record" onclick="startRecording()">
-        <span class="mic-icon">🎙️</span>
+        <span class="record-icon-shell" aria-hidden="true">
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M12 4.75a3.25 3.25 0 0 0-3.25 3.25v4a3.25 3.25 0 0 0 6.5 0V8A3.25 3.25 0 0 0 12 4.75Z" fill="currentColor"/>
+            <path d="M7.25 11.75V12a4.75 4.75 0 0 0 9.5 0v-.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            <path d="M12 16.75V19.25" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+            <path d="M9 19.25h6" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/>
+          </svg>
+        </span>
         <span>녹음 시작</span>
       </button>
       <p class="idle-hint">버튼을 눌러 회의를 녹음하세요</p>
@@ -163,7 +203,11 @@
         <div class="bar"></div><div class="bar"></div><div class="bar"></div>
       </div>
       <button class="btn-stop" onclick="stopRecording()">
-        <span class="stop-icon">⏹</span>
+        <span class="record-icon-shell stop-shell" aria-hidden="true">
+          <svg class="stop-icon" viewBox="0 0 24 24" fill="none">
+            <rect x="7" y="7" width="10" height="10" rx="2.5" fill="currentColor"/>
+          </svg>
+        </span>
         <span>녹음 완료</span>
       </button>
     </div>
